@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gestão de Atividades</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+/* CABEÇALHO */
+
+header {
+    background: #173f8a;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+header p {
+    margin: 0;
+    opacity: .9;
+}
+
+/* CONTAINER */
+
+.container {
+    max-width: 1400px;
+    margin: 25px auto;
+    padding: 0 15px;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    text-align: center;
+}
+
+.numero {
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    color: #173f8a;
+    margin-bottom: 5px;
+}
+
+.label {
+    color: #6b7280;
+}
+
+/* PAINEL */
+
+.panel {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+/* BARRA */
+
+.barra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* FILTROS */
+
+.filtros {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filtros button {
+    border: 0;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #e5e7eb;
+    font-weight: bold;
+}
+
+.filtros button:hover {
+    background: #d1d5db;
+}
+
+.filtros button.ativo {
+    background: #173f8a;
+    color: white;
+}
+
+/* BOTÃO LIMPAR */
+
+.btn-limpar {
+    border: 0;
+    padding: 11px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #f59e0b;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-limpar:hover {
+    background: #d97706;
+}
+
+/* TABELA */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 13px;
+    font-size: 14px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+th:nth-child(1) {
+    width: 50px;
+}
+
+th:nth-child(2) {
+    width: 32%;
+}
+
+th:nth-child(3) {
+    width: 170px;
+}
+
+th:nth-child(4) {
+    width: 48%;
+}
+
+/* REALIZADA */
+
+tr.realizada {
+    background: #ecfdf5;
+}
+
+tr.realizada .atividade {
+    text-decoration: line-through;
+    color: #6b7280;
+}
+
+/* FLAG */
+
+.flag {
+    font-size: 21px;
+    margin-right: 8px;
+}
+
+/* BOTÃO STATUS */
+
+.status {
+    border: none;
+    padding: 9px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pendente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.realizada-status {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* DESCRIÇÃO */
+
+.descricao {
+    width: 100%;
+    min-height: 50px;
+    resize: vertical;
+    padding: 9px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+.descricao:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,.1);
+}
+
+/* AVISO SALVO */
+
+.salvo {
+    font-size: 11px;
+    color: #16a34a;
+    margin-top: 3px;
+    display: none;
+}
+
+/* VAZIO */
+
+.vazio {
+    text-align: center;
+    color: #6b7280;
+    padding: 30px;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 800px) {
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .panel {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 850px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>📋 Gestão de Atividades</h1>
+
+    <p>
+        Controle de atividades — Pendente / Realizada
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- DASHBOARD -->
+
+    <div class="dashboard">
+
+        <div class="card">
+
+            <span
+                class="numero"
+                id="total"
+            >
+                0
+            </span>
+
+            <span class="label">
+                Total
+            </span>
+
+        </div>
+
+
+        <div class="card">
+
+            <span
+                class="numero"
+                id="pendentes"
+            >
+                0
+            </span>
+
+            <span class="label">
+                Pendentes
+            </span>
+
+        </div>
+
+
+        <div class="card">
+
+            <span
+                class="numero"
+                id="realizadas"
+            >
+                0
+            </span>
+
+            <span class="label">
+                Realizadas
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PAINEL -->
+
+    <div class="panel">
+
+
+        <div class="barra">
+
+
+            <!-- FILTROS -->
+
+            <div class="filtros">
+
+                <button
+                    class="ativo"
+                    onclick="filtrar('todos', this)"
+                >
+                    Todas
+                </button>
+
+                <button
+                    onclick="filtrar('pendente', this)"
+                >
+                    Pendentes
+                </button>
+
+                <button
+                    onclick="filtrar('realizada', this)"
+                >
+                    Realizadas
+                </button>
+
+            </div>
+
+
+            <!-- LIMPAR FLAGS -->
+
+            <button
+                class="btn-limpar"
+                onclick="limparFlags()"
+            >
+                🔄 Limpar Flags
+            </button>
+
+
+        </div>
+
+
+        <!-- TABELA -->
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Atividade
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Descrição
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="lista">
+
+            </tbody>
+
+        </table>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/*
+====================================================
+LISTA DE ATIVIDADES
+====================================================
+*/
+
+const atividadesIniciais = [
+
+    "Rotas >12h",
+
+    "SPR LM",
+
+    "Share Me Rotas/Driver Assig/Nex's",
+
+    "Nex's Coletas/Insucessos/Projetos",
+
+    "Utilização Frota Fixa/Ckecklist",
+
+    "Delay/DIT",
+
+    "Share kangu LM",
+
+    "No Show (Pacotes)",
+
+    "Delivery Success",
+
+    "Ops Clock veículo",
+
+    "ORH Compliance LM",
+
+    "Aderência YMS LM",
+
+    "Bulky/Desemb/Coletas",
+
+    "Not used"
+
+];
+
+
+/*
+====================================================
+CARREGAMENTO DOS DADOS
+====================================================
+*/
+
+let atividades =
+    JSON.parse(
+        localStorage.getItem("gestaoAtividades")
+    );
+
+
+/*
+Se não existir nenhuma informação salva,
+cria as 14 atividades como pendentes.
+*/
+
+if (!atividades) {
+
+    atividades =
+        atividadesIniciais.map(
+            (nome, index) => ({
+
+                id: index + 1,
+
+                nome: nome,
+
+                status: "pendente",
+
+                descricao: ""
+
+            })
+        );
+
+}
+
+
+/*
+Garante compatibilidade caso algum
+campo esteja faltando.
+*/
+
+atividades = atividades.map(
+    atividade => ({
+
+        ...atividade,
+
+        descricao:
+            atividade.descricao || "",
+
+        status:
+            atividade.status || "pendente"
+
+    })
+);
+
+
+let filtroAtual = "todos";
+
+
+/*
+====================================================
+SALVAR
+====================================================
+*/
+
+function salvar() {
+
+    localStorage.setItem(
+
+        "gestaoAtividades",
+
+        JSON.stringify(atividades)
+
+    );
+
+}
+
+
+/*
+====================================================
+ALTERAR STATUS
+====================================================
+*/
+
+function alterarStatus(id) {
+
+    const atividade =
+        atividades.find(
+            item => item.id === id
+        );
+
+
+    if (!atividade) return;
+
+
+    if (
+        atividade.status === "pendente"
+    ) {
+
+        atividade.status = "realizada";
+
+    } else {
+
+        atividade.status = "pendente";
+
+    }
+
+
+    salvar();
+
+    renderizar();
+
+}
+
+
+/*
+====================================================
+SALVAR DESCRIÇÃO
+====================================================
+*/
+
+function salvarDescricao(id, valor) {
+
+    const atividade =
+        atividades.find(
+            item => item.id === id
+        );
+
+
+    if (!atividade) return;
+
+
+    atividade.descricao = valor;
+
+
+    salvar();
+
+
+    const aviso =
+        document.getElementById(
+            "salvo-" + id
+        );
+
+
+    if (aviso) {
+
+        aviso.style.display = "block";
+
+
+        setTimeout(
+            () => {
+
+                aviso.style.display = "none";
+
+            },
+            1000
+        );
+
+    }
+
+}
+
+
+/*
+====================================================
+LIMPAR FLAGS
+====================================================
+
+Não apaga as atividades.
+
+Não apaga as descrições.
+
+Somente transforma:
+
+Realizada → Pendente
+*/
+
+function limparFlags() {
+
+
+    const quantidade =
+        atividades.filter(
+            atividade =>
+                atividade.status === "realizada"
+        ).length;
+
+
+    if (quantidade === 0) {
+
+        alert(
+            "Não existem atividades realizadas para limpar."
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+
+            `Existem ${quantidade} atividade(s) realizada(s).\n\n` +
+
+            `O botão irá limpar somente o flag "Realizada".\n\n` +
+
+            `As atividades e descrições serão mantidas.\n\n` +
+
+            `Deseja continuar?`
+
+        );
+
+
+    if (!confirmar) return;
+
+
+    atividades =
+        atividades.map(
+            atividade => ({
+
+                ...atividade,
+
+                status: "pendente"
+
+            })
+        );
+
+
+    salvar();
+
+    renderizar();
+
+
+    alert(
+        "Flags limpos com sucesso!"
+    );
+
+}
+
+
+/*
+====================================================
+FILTROS
+====================================================
+*/
+
+function filtrar(tipo, botao) {
+
+
+    filtroAtual = tipo;
+
+
+    document
+        .querySelectorAll(".filtros button")
+        .forEach(
+            btn =>
+                btn.classList.remove("ativo")
+        );
+
+
+    botao.classList.add("ativo");
+
+
+    renderizar();
+
+}
+
+
+/*
+====================================================
+RENDERIZAR
+====================================================
+*/
+
+function renderizar() {
+
+
+    const lista =
+        document.getElementById("lista");
+
+
+    lista.innerHTML = "";
+
+
+    const filtradas =
+        atividades.filter(
+            atividade => {
+
+                if (
+                    filtroAtual === "todos"
+                ) {
+
+                    return true;
+
+                }
+
+
+                return (
+                    atividade.status ===
+                    filtroAtual
+                );
+
+            }
+        );
+
+
+    /*
+    Nenhuma atividade
+    */
+
+    if (filtradas.length === 0) {
+
+        lista.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="vazio"
+                >
+
+                    Nenhuma atividade encontrada.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    /*
+    Criação das linhas
+    */
+
+    filtradas.forEach(
+        (atividade, index) => {
+
+
+            const tr =
+                document.createElement("tr");
+
+
+            if (
+                atividade.status ===
+                "realizada"
+            ) {
+
+                tr.classList.add(
+                    "realizada"
+                );
+
+            }
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+
+                <td class="atividade">
+
+                    <span class="flag">
+
+                        ${
+                            atividade.status ===
+                            "realizada"
+                            ? "☑"
+                            : "☐"
+                        }
+
+                    </span>
+
+                    ${escapeHTML(
+                        atividade.nome
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    <button
+
+                        class="status ${
+                            atividade.status ===
+                            "realizada"
+
+                            ? "realizada-status"
+
+                            : "pendente"
+                        }"
+
+                        onclick="
+                            alterarStatus(
+                                ${atividade.id}
+                            )
+                        "
+
+                    >
+
+                        ${
+                            atividade.status ===
+                            "realizada"
+
+                            ? "✓ Realizada"
+
+                            : "⏳ Pendente"
+                        }
+
+                    </button>
+
+                </td>
+
+
+                <td>
+
+                    <textarea
+
+                        class="descricao"
+
+                        placeholder="
+                            Digite a descrição da atividade...
+                        "
+
+                        onchange="
+                            salvarDescricao(
+                                ${atividade.id},
+                                this.value
+                            )
+                        "
+
+                    >${escapeHTML(
+                        atividade.descricao
+                    )}</textarea>
+
+
+                    <div
+                        class="salvo"
+                        id="salvo-${atividade.id}"
+                    >
+
+                        ✓ Salvo
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            lista.appendChild(tr);
+
+        }
+    );
+
+
+    atualizarDashboard();
+
+}
+
+
+/*
+====================================================
+DASHBOARD
+====================================================
+*/
+
+function atualizarDashboard() {
+
+
+    const total =
+        atividades.length;
+
+
+    const realizadas =
+        atividades.filter(
+            atividade =>
+                atividade.status ===
+                "realizada"
+        ).length;
+
+
+    const pendentes =
+        total - realizadas;
+
+
+    document.getElementById(
+        "total"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "pendentes"
+    ).textContent = pendentes;
+
+
+    document.getElementById(
+        "realizadas"
+    ).textContent = realizadas;
+
+}
+
+
+/*
+====================================================
+SEGURANÇA DO TEXTO
+====================================================
+*/
+
+function escapeHTML(texto) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = texto;
+
+    return div.innerHTML;
+
+}
+
+
+/*
+====================================================
+INICIAR SISTEMA
+====================================================
+*/
+
+renderizar();
+
+</script>
+
+</body>
+</html>
